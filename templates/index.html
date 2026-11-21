@@ -1,0 +1,2157 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MediCore AI — Smarter Care. Faster Decisions.</title>
+
+  <!-- Fonts: Plus Jakarta Sans & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            obsidian: '#040909',
+            emeraldGlow: '#00e599',
+            emeraldBrand: '#10b981',
+            panelDark: 'rgba(12, 22, 22, 0.85)',
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    :root {
+      --bg-obsidian: #040909;
+      --emerald-glow: #00e599;
+      --emerald-main: #10b981;
+      --cyan-holo: #22d3ee;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--bg-obsidian);
+      color: #f8fafc;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* Ambient Background Glows */
+    .ambient-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(circle at 12% 20%, rgba(16, 185, 129, 0.13) 0%, transparent 42%),
+        radial-gradient(circle at 75% 45%, rgba(0, 229, 153, 0.11) 0%, transparent 45%),
+        radial-gradient(circle at 60% 85%, rgba(34, 211, 238, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, #050d0d 0%, #040909 100%);
+    }
+
+    /* Glassmorphic Panels */
+    .glass-panel {
+      background: rgba(11, 20, 20, 0.84);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(16, 185, 129, 0.15);
+      box-shadow: 0 10px 35px -10px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    }
+
+    .glass-card {
+      background: linear-gradient(180deg, rgba(16, 28, 28, 0.85) 0%, rgba(10, 18, 18, 0.92) 100%);
+      border: 1px solid rgba(148, 163, 184, 0.12);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+      transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .glass-card:hover {
+      border-color: rgba(16, 185, 129, 0.32);
+    }
+
+    /* Primary Glowing Button */
+    .btn-emerald-glow {
+      background: linear-gradient(135deg, #00e599 0%, #10b981 100%);
+      color: #031510;
+      box-shadow: 0 0 24px rgba(0, 229, 153, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      transition: all 0.25s ease;
+    }
+
+    .btn-emerald-glow:hover {
+      box-shadow: 0 0 34px rgba(0, 229, 153, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      transform: translateY(-1px);
+    }
+
+    /* 3D Perspective Dashboard Container (Hero Split Mode) */
+    .dashboard-perspective-wrapper {
+      perspective: 1800px;
+      transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .dashboard-frame {
+      transform-style: preserve-3d;
+      transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.65s ease;
+      box-shadow:
+        -25px 30px 70px rgba(0, 0, 0, 0.85),
+        0 0 50px rgba(16, 185, 129, 0.1),
+        inset 0 1px 1px rgba(255, 255, 255, 0.08);
+    }
+
+    @media (min-width: 1024px) {
+      .hero-mode .dashboard-frame {
+        transform: rotateY(-9deg) rotateX(2.5deg) rotateZ(0.4deg) scale(0.98);
+      }
+
+      .hero-mode .dashboard-frame:hover {
+        transform: rotateY(-1.5deg) rotateX(0.5deg) rotateZ(0deg) scale(1);
+        box-shadow:
+          -10px 25px 60px rgba(0, 0, 0, 0.9),
+          0 0 65px rgba(0, 229, 153, 0.16),
+          inset 0 1px 1px rgba(255, 255, 255, 0.12);
+      }
+    }
+
+    .full-dashboard-mode .dashboard-frame {
+      transform: none !important;
+    }
+
+    /* Holographic Heart Animations */
+    @keyframes heartbeat {
+      0%, 100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 18px rgba(34, 211, 238, 0.65)) drop-shadow(0 0 36px rgba(0, 229, 153, 0.35));
+      }
+      14% {
+        transform: scale(1.065);
+        filter: drop-shadow(0 0 28px rgba(34, 211, 238, 0.95)) drop-shadow(0 0 50px rgba(0, 229, 153, 0.55));
+      }
+      28% {
+        transform: scale(1.01);
+      }
+      42% {
+        transform: scale(1.045);
+        filter: drop-shadow(0 0 24px rgba(34, 211, 238, 0.85)) drop-shadow(0 0 42px rgba(0, 229, 153, 0.45));
+      }
+      70% {
+        transform: scale(1);
+      }
+    }
+
+    .holo-heart-svg {
+      animation: heartbeat var(--beat-duration, 1.15s) infinite ease-in-out;
+      transform-origin: center center;
+    }
+
+    @keyframes spinSlow {
+      from { transform: rotateX(74deg) rotateZ(0deg); }
+      to { transform: rotateX(74deg) rotateZ(360deg); }
+    }
+
+    @keyframes spinReverse {
+      from { transform: rotateX(74deg) rotateZ(360deg); }
+      to { transform: rotateX(74deg) rotateZ(0deg); }
+    }
+
+    @keyframes scanBeam {
+      0%, 100% { transform: translateY(-55px); opacity: 0.15; }
+      50% { transform: translateY(55px); opacity: 0.7; }
+    }
+
+    .holo-ring-1 {
+      animation: spinSlow 14s linear infinite;
+    }
+
+    .holo-ring-2 {
+      animation: spinReverse 9s linear infinite;
+    }
+
+    .holo-scanline {
+      animation: scanBeam 3.6s ease-in-out infinite;
+    }
+
+    @keyframes ecgDraw {
+      0% { stroke-dashoffset: 240; }
+      100% { stroke-dashoffset: 0; }
+    }
+
+    .ecg-path {
+      stroke-dasharray: 240;
+      animation: ecgDraw 2.2s linear infinite;
+    }
+
+    /* Live Pulse Dot */
+    @keyframes livePulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(1.35); }
+    }
+
+    .live-dot {
+      animation: livePulse 1.6s infinite ease-in-out;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(4, 9, 9, 0.6);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(16, 185, 129, 0.28);
+      border-radius: 999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(16, 185, 129, 0.5);
+    }
+
+    /* Dotted Wave Graphic on Hero Left */
+    .hero-dot-wave {
+      background-image: radial-gradient(rgba(16, 185, 129, 0.35) 1px, transparent 1px);
+      background-size: 14px 14px;
+      mask-image: radial-gradient(ellipse 85% 60% at 30% 60%, black 15%, transparent 75%);
+      -webkit-mask-image: radial-gradient(ellipse 85% 60% at 30% 60%, black 15%, transparent 75%);
+    }
+
+    /* Queue Active Item */
+    .queue-item.active-patient {
+      background: rgba(16, 185, 129, 0.12);
+      border-color: rgba(16, 185, 129, 0.45);
+    }
+  </style>
+</head>
+
+<body class="selection:bg-emerald-500/30 selection:text-emerald-200">
+  <!-- Ambient Background -->
+  <div class="ambient-bg"></div>
+
+  <!-- Top Navigation Bar -->
+  <header class="sticky top-0 z-40 border-b border-emerald-500/10 bg-[#040909]/80 backdrop-blur-xl">
+    <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <!-- Left: Logo -->
+      <button onclick="setViewMode('hero')" class="flex items-center gap-2.5 group focus:outline-none">
+        <div class="relative w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center shadow-[0_0_18px_rgba(16,185,129,0.3)] group-hover:shadow-[0_0_24px_rgba(0,229,153,0.5)] transition-all">
+          <svg class="w-5 h-5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+            <path d="M6 12h3l1.5-3 2.5 6 1.5-3H18" stroke="#00e599" stroke-width="2" />
+          </svg>
+        </div>
+        <span class="font-display font-bold text-lg tracking-tight text-white">
+          MediCore <span class="text-emerald-400">AI</span>
+        </span>
+      </button>
+
+      <!-- Center: Nav Links -->
+      <nav class="hidden md:flex items-center gap-7 text-sm text-slate-300 font-medium">
+        <button onclick="showToast('Platform Overview: Real-time ICU & ER Intelligence Suite')" class="flex items-center gap-1 hover:text-emerald-400 transition-colors">
+          Platform <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-500"></i>
+        </button>
+        <button onclick="showToast('Solutions: Sepsis Prediction, Bed Optimization & AI Triage')" class="flex items-center gap-1 hover:text-emerald-400 transition-colors">
+          Solutions <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-500"></i>
+        </button>
+        <button onclick="showToast('Resources: Clinical Whitepapers & HIPAA Compliance Docs')" class="flex items-center gap-1 hover:text-emerald-400 transition-colors">
+          Resources <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-500"></i>
+        </button>
+        <button onclick="showToast('Company: Trusted by 140+ Healthcare Networks Worldwide')" class="flex items-center gap-1 hover:text-emerald-400 transition-colors">
+          Company <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-500"></i>
+        </button>
+      </nav>
+
+      <!-- Right: Toggle + Request Demo -->
+      <div class="flex items-center gap-2.5 sm:gap-3">
+        <button id="patientLoginNavBtn" onclick="openPatientLoginModal()" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-500/20 hover:border-cyan-400/50 transition-all flex items-center gap-2">
+          <i id="patientLoginNavIcon" data-lucide="user-check" class="w-4 h-4"></i>
+          <span id="patientLoginNavText">Patient Login</span>
+        </button>
+        <button id="viewToggleBtn" onclick="toggleViewMode()" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/20 hover:border-emerald-400/50 transition-all flex items-center gap-2">
+          <i id="viewToggleIcon" data-lucide="maximize-2" class="w-4 h-4"></i>
+          <span id="viewToggleText">Full Dashboard</span>
+        </button>
+        <button onclick="openDemoModal()" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-medium text-white border border-slate-700/90 hover:border-emerald-400/60 hover:bg-emerald-500/10 transition-all">
+          Request Demo
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main id="mainContainer" class="relative z-10 hero-mode max-w-[1640px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-10 transition-all duration-500">
+    <div id="layoutGrid" class="flex flex-col lg:flex-row items-center lg:items-stretch gap-8 lg:gap-6">
+
+      <!-- ===================================================== -->
+      <!-- LEFT SIDE: HERO LANDING SECTION (42% on Desktop)      -->
+      <!-- ===================================================== -->
+      <section id="heroLeftPanel" class="w-full lg:w-[42%] flex flex-col justify-between relative py-2 lg:py-6 lg:pr-4 transition-all duration-500">
+        <!-- Decorative Ambient Wave -->
+        <div class="hero-dot-wave absolute -left-8 bottom-16 w-[115%] h-44 pointer-events-none opacity-60"></div>
+
+        <div class="relative z-10">
+          <!-- Headline -->
+          <h1 class="font-display text-4xl sm:text-5xl xl:text-[3.65rem] font-extrabold leading-[1.08] tracking-tight text-white">
+            Smarter Care.<br />
+            Faster <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#00e599] to-[#10b981] drop-shadow-[0_0_25px_rgba(0,229,153,0.3)]">Decisions.</span>
+          </h1>
+
+          <!-- Subheadline -->
+          <p class="mt-5 text-slate-300/90 text-base sm:text-lg leading-relaxed max-w-lg font-normal">
+            AI-powered monitoring, diagnostics, and hospital intelligence for modern healthcare systems.
+          </p>
+
+          <!-- Primary & Secondary CTA Buttons -->
+          <div class="mt-8 flex flex-wrap items-center gap-3.5">
+            <button onclick="openDemoModal()" class="btn-emerald-glow px-6 py-3.5 rounded-xl font-semibold text-sm sm:text-base flex items-center gap-2">
+              Request Demo
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+            <button onclick="setViewMode('full')" class="px-6 py-3.5 rounded-xl font-semibold text-sm sm:text-base text-slate-100 bg-white/[0.03] border border-slate-700/80 hover:border-emerald-400/60 hover:bg-emerald-500/10 transition-all flex items-center gap-2">
+              Explore Platform
+            </button>
+          </div>
+
+          <!-- Patient Portal & Live Database Quick Access Pill -->
+          <div class="mt-4 flex flex-wrap items-center gap-2.5">
+            <button onclick="openPatientLoginModal()" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium bg-emerald-500/[0.08] text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/15 hover:border-emerald-400/60 transition-all">
+              <i data-lucide="user-check" class="w-3.5 h-3.5 text-emerald-400"></i>
+              <span>Patient Portal Login</span>
+              <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-200 font-semibold">SQLite</span>
+            </button>
+            <button onclick="openDirectoryModal()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-medium bg-white/[0.03] text-slate-300 border border-white/10 hover:border-cyan-400/45 hover:text-cyan-300 transition-all">
+              <i data-lucide="database" class="w-3.5 h-3.5 text-cyan-400"></i>
+              <span>Browse Patient DB</span>
+            </button>
+          </div>
+
+          <!-- 4 Feature Mini-Cards -->
+          <div class="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="group p-3 rounded-xl bg-white/[0.02] border border-white/[0.05] hover:border-emerald-500/35 hover:bg-emerald-500/[0.05] transition-all">
+              <div class="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-emerald-400 mb-2.5 group-hover:scale-105 transition-transform">
+                <i data-lucide="brain-circuit" class="w-4 h-4"></i>
+              </div>
+              <h3 class="text-xs font-semibold text-white">AI Diagnostics</h3>
+              <p class="text-[11px] text-slate-400 mt-0.5">Smarter insights</p>
+            </div>
+
+            <div class="group p-3 rounded-xl bg-white/[0.02] border border-white/[0.05] hover:border-emerald-500/35 hover:bg-emerald-500/[0.05] transition-all">
+              <div class="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-emerald-400 mb-2.5 group-hover:scale-105 transition-transform">
+                <i data-lucide="activity" class="w-4 h-4"></i>
+              </div>
+              <h3 class="text-xs font-semibold text-white">Real-time Monitoring</h3>
+              <p class="text-[11px] text-slate-400 mt-0.5">Live patient tracking</p>
+            </div>
+
+            <div class="group p-3 rounded-xl bg-white/[0.02] border border-white/[0.05] hover:border-emerald-500/35 hover:bg-emerald-500/[0.05] transition-all">
+              <div class="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-emerald-400 mb-2.5 group-hover:scale-105 transition-transform">
+                <i data-lucide="shield-alert" class="w-4 h-4"></i>
+              </div>
+              <h3 class="text-xs font-semibold text-white">Risk Prediction</h3>
+              <p class="text-[11px] text-slate-400 mt-0.5">Prevent critical events</p>
+            </div>
+
+            <div class="group p-3 rounded-xl bg-white/[0.02] border border-white/[0.05] hover:border-emerald-500/35 hover:bg-emerald-500/[0.05] transition-all">
+              <div class="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-emerald-400 mb-2.5 group-hover:scale-105 transition-transform">
+                <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+              </div>
+              <h3 class="text-xs font-semibold text-white">Hospital Intelligence</h3>
+              <p class="text-[11px] text-slate-400 mt-0.5">Data-driven operations</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Trust & Compliance -->
+        <div class="relative z-10 mt-10 pt-6 border-t border-white/[0.06]">
+          <p class="text-xs font-medium text-slate-400 tracking-wide mb-4">Trusted by leading healthcare providers</p>
+
+          <!-- 4 Hospital Logos -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-slate-400">
+            <div class="flex items-center gap-2 opacity-80 hover:opacity-100 transition-opacity">
+              <div class="w-6 h-6 rounded-md bg-slate-800/90 border border-slate-700 flex items-center justify-center text-emerald-400">
+                <i data-lucide="plus" class="w-3.5 h-3.5 stroke-[3]"></i>
+              </div>
+              <div class="leading-tight">
+                <div class="text-xs font-bold text-slate-200">CityCare</div>
+                <div class="text-[9px] uppercase tracking-wider text-slate-500">Hospitals</div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 opacity-80 hover:opacity-100 transition-opacity">
+              <div class="w-6 h-6 rounded-full bg-slate-800/90 border border-slate-700 flex items-center justify-center text-cyan-400">
+                <i data-lucide="heart-pulse" class="w-3.5 h-3.5"></i>
+              </div>
+              <div class="leading-tight">
+                <div class="text-xs font-bold text-slate-200">Medix</div>
+                <div class="text-[9px] uppercase tracking-wider text-slate-500">Healthcare</div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 opacity-80 hover:opacity-100 transition-opacity">
+              <div class="w-6 h-6 rounded-md bg-slate-800/90 border border-slate-700 flex items-center justify-center text-emerald-400">
+                <i data-lucide="shield-plus" class="w-3.5 h-3.5"></i>
+              </div>
+              <div class="leading-tight">
+                <div class="text-xs font-bold text-slate-200">HealthPlus</div>
+                <div class="text-[9px] uppercase tracking-wider text-slate-500">Hospital</div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 opacity-80 hover:opacity-100 transition-opacity">
+              <div class="w-6 h-6 rounded-full bg-slate-800/90 border border-slate-700 flex items-center justify-center text-teal-400">
+                <i data-lucide="crosshair" class="w-3.5 h-3.5"></i>
+              </div>
+              <div class="leading-tight">
+                <div class="text-xs font-bold text-slate-200">LifeLine</div>
+                <div class="text-[9px] uppercase tracking-wider text-slate-500">Medical Center</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Compliance Badges -->
+          <div class="mt-5 inline-flex flex-wrap items-center gap-3 px-4 py-2 rounded-full bg-white/[0.025] border border-slate-800/90">
+            <span class="flex items-center gap-1.5 text-xs font-medium text-slate-300">
+              <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400"></i>
+              HIPAA Compliant
+            </span>
+            <span class="h-3 w-px bg-slate-700"></span>
+            <span class="flex items-center gap-1.5 text-xs font-medium text-slate-300">
+              <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-400"></i>
+              SOC 2 Certified
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================== -->
+      <!-- RIGHT SIDE: INTERACTIVE 3D DASHBOARD (58% -> 100%)    -->
+      <!-- ===================================================== -->
+      <section id="dashboardSection" class="w-full lg:w-[58%] dashboard-perspective-wrapper transition-all duration-500">
+        <div class="dashboard-frame glass-panel rounded-2xl overflow-hidden flex flex-col sm:flex-row min-h-[680px]">
+
+          <!-- Slim Left Icon Sidebar -->
+          <aside class="w-full sm:w-14 bg-[#071111]/95 border-b sm:border-b-0 sm:border-r border-emerald-500/10 flex sm:flex-col items-center justify-between px-3 py-2.5 sm:py-4 gap-3 shrink-0">
+            <div class="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/35 flex items-center justify-center text-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.25)]">
+              <i data-lucide="heart-pulse" class="w-4 h-4"></i>
+            </div>
+
+            <div class="flex sm:flex-col items-center gap-2">
+              <button onclick="selectSidebarTab(this, 'Overview Dashboard')" title="Overview" class="sidebar-btn active w-9 h-9 rounded-lg flex items-center justify-center bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 transition-all">
+                <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+              </button>
+              <button onclick="openDirectoryModal(this)" title="SQLite Patient Directory" class="sidebar-btn w-9 h-9 rounded-lg flex items-center justify-center text-slate-400 hover:text-emerald-300 hover:bg-white/5 transition-all">
+                <i data-lucide="users" class="w-4 h-4"></i>
+              </button>
+              <button onclick="openPatientLoginModal(this)" title="Patient Login Portal" class="sidebar-btn w-9 h-9 rounded-lg flex items-center justify-center text-cyan-400/80 hover:text-cyan-300 hover:bg-cyan-500/10 transition-all">
+                <i data-lucide="user-check" class="w-4 h-4"></i>
+              </button>
+              <button onclick="selectSidebarTab(this, 'Live Telemetry Monitor')" title="Vitals Monitor" class="sidebar-btn w-9 h-9 rounded-lg flex items-center justify-center text-slate-400 hover:text-emerald-300 hover:bg-white/5 transition-all">
+                <i data-lucide="activity" class="w-4 h-4"></i>
+              </button>
+              <button onclick="selectSidebarTab(this, 'AI Clinical Diagnostics')" title="AI Diagnostics" class="sidebar-btn w-9 h-9 rounded-lg flex items-center justify-center text-slate-400 hover:text-emerald-300 hover:bg-white/5 transition-all">
+                <i data-lucide="sparkles" class="w-4 h-4"></i>
+              </button>
+              <button onclick="selectSidebarTab(this, 'Lab & Imaging Reports')" title="Lab Reports" class="sidebar-btn w-9 h-9 rounded-lg flex items-center justify-center text-slate-400 hover:text-emerald-300 hover:bg-white/5 transition-all">
+                <i data-lucide="file-text" class="w-4 h-4"></i>
+              </button>
+              <button onclick="selectSidebarTab(this, 'System Settings')" title="Settings" class="sidebar-btn w-9 h-9 rounded-lg flex items-center justify-center text-slate-400 hover:text-emerald-300 hover:bg-white/5 transition-all">
+                <i data-lucide="settings" class="w-4 h-4"></i>
+              </button>
+            </div>
+
+            <div class="hidden sm:flex w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 text-[#031510] font-bold text-xs items-center justify-center shadow-md" title="Dr. Sarah Chen">
+              DS
+            </div>
+          </aside>
+
+          <!-- Dashboard Inner Content -->
+          <div class="flex-1 p-3.5 sm:p-4 lg:p-5 flex flex-col gap-3.5 overflow-x-hidden">
+
+            <!-- Top Greeting Bar -->
+            <div class="flex flex-wrap items-center justify-between gap-2 pb-1">
+              <div>
+                <h2 class="font-display text-base sm:text-lg font-bold text-white flex items-center gap-1.5">
+                  Good Morning, Dr. Sarah <span>👋</span>
+                </h2>
+                <p class="text-[11px] sm:text-xs text-slate-400">Here's what's happening at CityCare Hospital today.</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-[11px] font-medium text-emerald-300 flex items-center gap-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 live-dot"></span>
+                  Active Patient: <span id="activePatientBadge" class="font-bold text-white">#774682</span>
+                </div>
+                <button onclick="toggleViewMode()" class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] text-slate-300 transition-colors" title="Toggle Full Screen">
+                  <i data-lucide="expand" class="w-3 h-3"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- ========================================= -->
+            <!-- TOP GRID (4 SECTIONS)                     -->
+            <!-- ========================================= -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
+
+              <!-- Section 1: Left Stack (Patient Overview + Critical Alerts) -->
+              <div class="md:col-span-6 xl:col-span-3 flex flex-col gap-3">
+                <!-- Patient Overview Card -->
+                <div class="glass-card rounded-xl p-3.5 flex-1 flex flex-col justify-between">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-medium text-slate-300">Patient Overview</span>
+                    <span class="px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-[10px] font-semibold text-emerald-400 flex items-center gap-1">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 live-dot"></span> Live
+                    </span>
+                  </div>
+                  <div class="mt-2.5 flex items-end justify-between gap-2">
+                    <div>
+                      <div id="totalPatientsCount" class="font-display text-2xl font-bold text-white tracking-tight">1,248</div>
+                      <div class="text-[11px] text-slate-400">Total Patients</div>
+                    </div>
+                    <!-- Mini Sparkline SVG -->
+                    <svg class="w-16 h-8 overflow-visible" viewBox="0 0 64 28">
+                      <defs>
+                        <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stop-color="#10b981" stop-opacity="0.35" />
+                          <stop offset="100%" stop-color="#10b981" stop-opacity="0" />
+                        </linearGradient>
+                      </defs>
+                      <path d="M2 22 L12 18 L22 20 L34 11 L46 14 L62 4 L62 28 L2 28 Z" fill="url(#sparkGrad)" />
+                      <path d="M2 22 L12 18 L22 20 L34 11 L46 14 L62 4" fill="none" stroke="#00e599" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </div>
+                  <div class="mt-2 text-[11px] font-medium text-emerald-400 flex items-center gap-1">
+                    <span>↑ 12.5%</span>
+                    <span class="text-slate-500 font-normal">from yesterday</span>
+                  </div>
+                </div>
+
+                <!-- Critical Alerts Card -->
+                <div class="glass-card rounded-xl p-3.5 border-amber-500/20 hover:border-amber-500/40 flex-1 flex flex-col justify-between">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-medium text-slate-300">Critical Alerts</span>
+                    <div class="w-7 h-7 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                      <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i>
+                    </div>
+                  </div>
+                  <div class="mt-1.5">
+                    <div class="font-display text-2xl font-bold text-amber-400">7</div>
+                    <div class="text-[11px] text-slate-400">Patients need immediate attention</div>
+                  </div>
+                  <button onclick="openAlertsModal()" class="mt-2.5 text-[11px] font-semibold text-amber-400 hover:text-amber-300 flex items-center justify-between w-full pt-2 border-t border-white/[0.05] transition-colors">
+                    <span>View all alerts</span>
+                    <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Section 2: Center Showcase (Holographic Anatomical Heart) -->
+              <div class="md:col-span-6 xl:col-span-4 glass-card rounded-xl p-3 relative overflow-hidden flex flex-col items-center justify-between min-h-[265px] bg-[radial-gradient(circle_at_50%_45%,rgba(34,211,238,0.16),rgba(6,16,18,0.96)_72%)]">
+                <!-- Top Holo Tag -->
+                <div class="w-full flex items-center justify-between z-10">
+                  <span class="text-[10px] uppercase tracking-widest font-semibold text-cyan-300/90 flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 live-dot"></span>
+                    3D Cardiac Twin
+                  </span>
+                  <span id="holoStatusTag" class="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/15 border border-cyan-400/30 text-cyan-300 font-medium">
+                    Sinus Rhythm
+                  </span>
+                </div>
+
+                <!-- Holographic Projection Container -->
+                <div class="relative w-44 h-44 flex items-center justify-center my-1">
+                  <!-- Vertical Hologram Light Cone -->
+                  <div class="absolute bottom-2 w-32 h-36 bg-gradient-to-t from-cyan-400/25 via-emerald-400/10 to-transparent blur-md rounded-t-full pointer-events-none"></div>
+
+                  <!-- Animated Scanning Beam -->
+                  <div class="holo-scanline absolute w-36 h-0.5 bg-gradient-to-r from-transparent via-cyan-300 to-transparent shadow-[0_0_12px_#22d3ee] z-20 pointer-events-none"></div>
+
+                  <!-- Detailed Layered Anatomical Heart SVG -->
+                  <svg id="holoHeartSvg" class="holo-heart-svg w-36 h-36 relative z-10" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                      <radialGradient id="heartCore" cx="45%" cy="45%" r="55%">
+                        <stop offset="0%" stop-color="#a5f3fc" stop-opacity="0.95" />
+                        <stop offset="45%" stop-color="#22d3ee" stop-opacity="0.72" />
+                        <stop offset="80%" stop-color="#059669" stop-opacity="0.55" />
+                        <stop offset="100%" stop-color="#042f2e" stop-opacity="0.2" />
+                      </radialGradient>
+                      <linearGradient id="vesselGrad" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#67e8f9" />
+                        <stop offset="100%" stop-color="#00e599" />
+                      </linearGradient>
+                      <filter id="holoGlow">
+                        <feGaussianBlur stdDeviation="2.2" result="blur" />
+                        <feMerge>
+                          <feMergeNode in="blur" />
+                          <feMergeNode in="SourceGraphic" />
+                        </feMerge>
+                      </filter>
+                    </defs>
+
+                    <!-- Superior Vena Cava -->
+                    <path d="M74 62 L70 30 C70 25 80 24 82 29 L85 56" fill="url(#vesselGrad)" fill-opacity="0.35" stroke="#67e8f9" stroke-width="1.8" />
+                    <!-- Aortic Arch & Branches -->
+                    <path d="M90 60 C88 30 112 20 124 38 C132 50 126 68 118 76" fill="url(#vesselGrad)" fill-opacity="0.4" stroke="#a5f3fc" stroke-width="2.2" stroke-linecap="round" />
+                    <path d="M98 30 L96 16 M108 26 L110 13 M117 30 L123 19" stroke="#67e8f9" stroke-width="2.2" stroke-linecap="round" />
+                    <!-- Pulmonary Artery -->
+                    <path d="M96 76 C96 58 118 52 138 56 C142 57 143 65 137 66 C124 66 114 70 110 80" fill="url(#vesselGrad)" fill-opacity="0.45" stroke="#5eead4" stroke-width="1.8" />
+
+                    <!-- Main Anatomical Heart Body -->
+                    <path d="M76 62 C55 68 48 92 56 115 C64 139 88 158 108 168 C126 162 146 140 148 110 C150 86 135 68 116 66 C104 64 90 60 76 62 Z"
+                          fill="url(#heartCore)" stroke="#67e8f9" stroke-width="2" filter="url(#holoGlow)" />
+
+                    <!-- Left & Right Chamber Wireframe Mesh -->
+                    <path d="M76 68 C74 96 86 130 108 164" stroke="#a5f3fc" stroke-opacity="0.6" stroke-width="1.4" stroke-dasharray="3 3" />
+                    <path d="M58 102 C82 96 118 96 145 106" stroke="#5eead4" stroke-opacity="0.5" stroke-width="1.2" stroke-dasharray="2 3" />
+                    <path d="M66 128 C90 122 118 124 138 130" stroke="#67e8f9" stroke-opacity="0.45" stroke-width="1.2" />
+
+                    <!-- Coronary Arteries (Glowing Veins) -->
+                    <path d="M102 74 C98 92 94 114 102 148 M97 98 L80 114 M96 112 L74 126 M98 122 L120 138 M104 88 L128 96"
+                          stroke="#ecfeff" stroke-width="1.5" stroke-linecap="round" filter="url(#holoGlow)" />
+
+                    <!-- Glowing Telemetry Nodes on Heart -->
+                    <circle cx="98" cy="98" r="2.6" fill="#00e599" />
+                    <circle cx="118" cy="116" r="2.2" fill="#67e8f9" />
+                    <circle cx="82" cy="120" r="2.2" fill="#22d3ee" />
+                  </svg>
+
+                  <!-- Holographic Circular Pedestal & Rotating Scan Rings -->
+                  <div class="absolute bottom-0 w-36 h-10 flex items-center justify-center pointer-events-none">
+                    <div class="holo-ring-1 absolute w-36 h-36 rounded-full border border-cyan-400/50 border-dashed shadow-[0_0_20px_rgba(34,211,238,0.45)]"></div>
+                    <div class="holo-ring-2 absolute w-24 h-24 rounded-full border-2 border-emerald-400/60 border-t-transparent shadow-[0_0_15px_rgba(0,229,153,0.45)]"></div>
+                    <div class="w-28 h-4 rounded-full bg-cyan-400/25 blur-sm"></div>
+                  </div>
+                </div>
+
+                <!-- Live Mini ECG Strip at Bottom of Heart Card -->
+                <div class="w-full flex items-center gap-2 pt-1 border-t border-cyan-500/15 z-10">
+                  <span class="text-[10px] font-mono text-emerald-400">ECG</span>
+                  <svg class="flex-1 h-5" viewBox="0 0 220 24" preserveAspectRatio="none">
+                    <path class="ecg-path" d="M0 12 L30 12 L38 12 L42 4 L47 21 L52 2 L57 16 L62 12 L95 12 L103 12 L107 4 L112 21 L117 2 L122 16 L127 12 L165 12 L173 12 L177 5 L182 20 L187 3 L192 16 L197 12 L220 12"
+                          fill="none" stroke="#00e599" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Section 3: 4 Live Vitals Stack -->
+              <div class="md:col-span-6 xl:col-span-2 grid grid-cols-2 xl:grid-cols-1 gap-2">
+                <!-- Heart Rate -->
+                <div class="glass-card rounded-xl px-3 py-2 flex items-center justify-between">
+                  <div>
+                    <div class="text-[10px] text-slate-400">Heart Rate</div>
+                    <div class="flex items-baseline gap-1 mt-0.5">
+                      <span id="vitalHR" class="font-display text-lg font-bold text-emerald-400">72</span>
+                      <span class="text-[10px] text-slate-500">bpm</span>
+                    </div>
+                  </div>
+                  <svg class="w-10 h-5" viewBox="0 0 40 20">
+                    <path d="M2 12 L10 12 L14 4 L19 18 L24 6 L28 12 L38 12" fill="none" stroke="#10b981" stroke-width="1.5" stroke-linecap="round" />
+                  </svg>
+                </div>
+
+                <!-- Blood Pressure -->
+                <div class="glass-card rounded-xl px-3 py-2 flex items-center justify-between">
+                  <div>
+                    <div class="text-[10px] text-slate-400">Blood Pressure</div>
+                    <div class="flex items-baseline gap-1 mt-0.5">
+                      <span id="vitalBP" class="font-display text-base font-bold text-cyan-400">120/80</span>
+                      <span class="text-[9px] text-slate-500">mmHg</span>
+                    </div>
+                  </div>
+                  <svg class="w-9 h-5" viewBox="0 0 40 20">
+                    <path d="M2 14 Q10 6 20 12 T38 8" fill="none" stroke="#22d3ee" stroke-width="1.5" stroke-linecap="round" />
+                  </svg>
+                </div>
+
+                <!-- Oxygen Saturation -->
+                <div class="glass-card rounded-xl px-3 py-2 flex items-center justify-between">
+                  <div>
+                    <div class="text-[10px] text-slate-400">Oxygen Sat.</div>
+                    <div class="flex items-baseline gap-1 mt-0.5">
+                      <span id="vitalSpO2" class="font-display text-lg font-bold text-sky-400">98%</span>
+                      <span class="text-[10px] text-slate-500">SpO2</span>
+                    </div>
+                  </div>
+                  <svg class="w-10 h-5" viewBox="0 0 40 20">
+                    <path d="M2 10 Q12 4 20 10 T38 10" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-linecap="round" />
+                  </svg>
+                </div>
+
+                <!-- Respiratory Rate -->
+                <div class="glass-card rounded-xl px-3 py-2 flex items-center justify-between">
+                  <div>
+                    <div class="text-[10px] text-slate-400">Respiratory Rate</div>
+                    <div class="flex items-baseline gap-1 mt-0.5">
+                      <span id="vitalRR" class="font-display text-lg font-bold text-amber-400">18</span>
+                      <span class="text-[10px] text-slate-500">br/min</span>
+                    </div>
+                  </div>
+                  <svg class="w-10 h-5" viewBox="0 0 40 20">
+                    <path d="M2 14 C8 5, 14 5, 20 14 C26 5, 32 5, 38 14" fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-linecap="round" />
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Section 4: Right Panel — AI Diagnosis Assistant -->
+              <div class="md:col-span-6 xl:col-span-3 glass-card rounded-xl p-3 flex flex-col justify-between min-h-[265px]">
+                <div class="flex items-center justify-between pb-2 border-b border-white/[0.06]">
+                  <div class="flex items-center gap-1.5">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5 text-emerald-400"></i>
+                    <span class="text-xs font-semibold text-white">AI Diagnosis Assistant</span>
+                  </div>
+                  <span class="text-[10px] text-emerald-400 font-mono">v4.2</span>
+                </div>
+
+                <!-- Chat Messages Area -->
+                <div id="aiChatBox" class="flex-1 overflow-y-auto my-2 space-y-2 max-h-[145px] pr-1">
+                  <!-- User Prompt Bubble -->
+                  <div class="bg-white/[0.04] border border-white/[0.06] rounded-lg p-2 text-[11px] text-slate-300">
+                    Analyze recent labs for patient ID: <span class="text-white font-semibold">774682</span>
+                  </div>
+                  <!-- AI Response Bubble -->
+                  <div class="bg-emerald-500/[0.08] border border-emerald-500/25 rounded-lg p-2 text-[11px] text-slate-200 leading-relaxed">
+                    <span class="text-emerald-400 font-semibold">Analysis complete.</span> The patient shows early signs of sepsis. Recommend close monitoring and following protocol.
+                  </div>
+                </div>
+
+                <!-- Confidence Score Bar -->
+                <div class="mb-2">
+                  <div class="flex items-center justify-between text-[10px] mb-1">
+                    <span class="text-slate-400">Confidence Score</span>
+                    <span id="aiConfidenceText" class="text-emerald-400 font-semibold">94%</span>
+                  </div>
+                  <div class="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                    <div id="aiConfidenceBar" class="h-full rounded-full bg-gradient-to-r from-emerald-500 to-[#00e599] transition-all duration-500" style="width: 94%"></div>
+                  </div>
+                </div>
+
+                <!-- Quick Prompts + Input -->
+                <div class="space-y-1.5">
+                  <div class="flex flex-wrap gap-1">
+                    <button onclick="sendQuickPrompt('Sepsis risk?')" class="text-[10px] px-2 py-0.5 rounded-md bg-white/[0.04] hover:bg-emerald-500/15 text-slate-300 hover:text-emerald-300 border border-white/[0.06] transition-colors">
+                      Sepsis risk?
+                    </button>
+                    <button onclick="sendQuickPrompt('Suggest meds')" class="text-[10px] px-2 py-0.5 rounded-md bg-white/[0.04] hover:bg-emerald-500/15 text-slate-300 hover:text-emerald-300 border border-white/[0.06] transition-colors">
+                      Suggest meds
+                    </button>
+                  </div>
+                  <form onsubmit="handleAiSubmit(event)" class="flex items-center gap-1.5">
+                    <input id="aiInput" type="text" placeholder="Ask AI Assistant..." class="w-full bg-[#060d0d] border border-slate-700/80 focus:border-emerald-500/60 rounded-lg px-2.5 py-1.5 text-[11px] text-white placeholder-slate-500 focus:outline-none" />
+                    <button type="submit" class="p-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/35 border border-emerald-500/35 text-emerald-300 transition-colors shrink-0" title="Send">
+                      <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            <!-- ========================================= -->
+            <!-- MIDDLE GRID (3 CARDS)                     -->
+            <!-- ========================================= -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
+
+              <!-- Card 1: Live Vitals Trend (Chart.js Multi-line) -->
+              <div class="md:col-span-12 xl:col-span-5 glass-card rounded-xl p-3.5 flex flex-col">
+                <div class="flex items-center justify-between gap-2 mb-2">
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs font-semibold text-white">Live Vitals Trend</span>
+                    <span class="px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-[10px] font-semibold text-emerald-400 flex items-center gap-1">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 live-dot"></span> Live
+                    </span>
+                  </div>
+                  <select id="trendTimeRange" onchange="updateVitalsChartRange()" class="bg-[#071111] border border-slate-700/80 rounded-lg px-2 py-1 text-[10px] text-slate-300 focus:outline-none focus:border-emerald-500/50">
+                    <option value="24h">Last 24 Hours</option>
+                    <option value="6h">Last 6 Hours</option>
+                    <option value="1h">Live 1 Hour</option>
+                  </select>
+                </div>
+                <div class="relative flex-1 min-h-[155px] w-full">
+                  <canvas id="vitalsTrendChart"></canvas>
+                </div>
+              </div>
+
+              <!-- Card 2: Emergency Queue (Clickable Interactive List) -->
+              <div class="md:col-span-7 xl:col-span-4 glass-card rounded-xl p-3.5 flex flex-col">
+                <div class="flex items-center justify-between mb-2.5">
+                  <span class="text-xs font-semibold text-white">Emergency Queue</span>
+                  <button onclick="openAlertsModal()" class="text-[11px] font-medium text-emerald-400 hover:text-emerald-300 transition-colors">View all</button>
+                </div>
+
+                <div id="emergencyQueueList" class="space-y-2 flex-1">
+                  <!-- Rendered dynamically via JS -->
+                </div>
+              </div>
+
+              <!-- Card 3: Bed Occupancy (Chart.js Doughnut) -->
+              <div class="md:col-span-5 xl:col-span-3 glass-card rounded-xl p-3.5 flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-xs font-semibold text-white">Bed Occupancy</span>
+                  <span class="text-[10px] text-slate-400">340 Beds</span>
+                </div>
+
+                <div class="flex items-center justify-between gap-2 my-auto py-1">
+                  <div class="relative w-28 h-28 shrink-0 mx-auto">
+                    <canvas id="bedOccupancyChart"></canvas>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                      <span class="font-display text-lg font-bold text-white leading-none">78%</span>
+                      <span class="text-[9px] text-slate-400 mt-0.5">Occupied</span>
+                    </div>
+                  </div>
+                  <div class="space-y-1.5 text-[10px] flex-1">
+                    <div class="flex items-center justify-between">
+                      <span class="flex items-center gap-1.5 text-slate-300"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>ICU</span>
+                      <span class="font-semibold text-white">92%</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span class="flex items-center gap-1.5 text-slate-300"><span class="w-2 h-2 rounded-full bg-cyan-400"></span>ER</span>
+                      <span class="font-semibold text-white">84%</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span class="flex items-center gap-1.5 text-slate-300"><span class="w-2 h-2 rounded-full bg-teal-600"></span>General</span>
+                      <span class="font-semibold text-white">71%</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span class="flex items-center gap-1.5 text-slate-400"><span class="w-2 h-2 rounded-full bg-slate-700"></span>Available</span>
+                      <span class="font-semibold text-emerald-400">22%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ========================================= -->
+            <!-- BOTTOM STRIP: HOSPITAL OPERATIONS         -->
+            <!-- ========================================= -->
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-semibold text-slate-200">Hospital Operations</span>
+                <span class="text-[10px] text-slate-500">Updated live • CityCare Main Campus</span>
+              </div>
+              <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-2.5">
+                <!-- Surgeries Today -->
+                <div class="glass-card rounded-xl p-3">
+                  <div class="text-[10px] text-slate-400">Surgeries Today</div>
+                  <div class="mt-1.5 flex items-baseline justify-between">
+                    <span class="font-display text-lg font-bold text-white">24</span>
+                    <span class="text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">↑ 8%</span>
+                  </div>
+                  <div class="text-[10px] text-slate-500 mt-1">vs yesterday</div>
+                </div>
+
+                <!-- Discharges -->
+                <div class="glass-card rounded-xl p-3">
+                  <div class="text-[10px] text-slate-400">Discharges</div>
+                  <div class="mt-1.5 flex items-baseline justify-between">
+                    <span class="font-display text-lg font-bold text-white">18</span>
+                    <span class="text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">↑ 12%</span>
+                  </div>
+                  <div class="text-[10px] text-slate-500 mt-1">vs yesterday</div>
+                </div>
+
+                <!-- Revenue Today -->
+                <div class="glass-card rounded-xl p-3">
+                  <div class="text-[10px] text-slate-400">Revenue Today</div>
+                  <div class="mt-1.5 flex items-baseline justify-between">
+                    <span class="font-display text-lg font-bold text-white">$248K</span>
+                    <span class="text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">↑ 9%</span>
+                  </div>
+                  <div class="text-[10px] text-slate-500 mt-1">vs yesterday</div>
+                </div>
+
+                <!-- Avg Length of Stay -->
+                <div class="glass-card rounded-xl p-3">
+                  <div class="text-[10px] text-slate-400">Avg. Length of Stay</div>
+                  <div class="mt-1.5 flex items-baseline justify-between">
+                    <span class="font-display text-lg font-bold text-white">4.2 <span class="text-xs font-normal text-slate-400">Days</span></span>
+                    <span class="text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">↓ 6%</span>
+                  </div>
+                  <div class="text-[10px] text-slate-500 mt-1">vs yesterday</div>
+                </div>
+
+                <!-- Readmission Risk -->
+                <div class="glass-card rounded-xl p-3 border-rose-500/20 hover:border-rose-500/45 col-span-2 sm:col-span-1">
+                  <div class="text-[10px] text-slate-400">Readmission Risk</div>
+                  <div class="mt-1.5 flex items-baseline justify-between">
+                    <span class="font-display text-lg font-bold text-rose-400">23</span>
+                    <span class="text-[10px] font-semibold text-rose-400 bg-rose-500/15 px-1.5 py-0.5 rounded">High Risk</span>
+                  </div>
+                  <div class="text-[10px] text-slate-500 mt-1">Patients flagged</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- ===================================================== -->
+  <!-- MODAL 1: REQUEST DEMO MODAL                           -->
+  <!-- ===================================================== -->
+  <div id="demoModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4">
+    <div class="glass-panel rounded-2xl max-w-md w-full p-6 border border-emerald-500/30 relative">
+      <button onclick="closeDemoModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-2.5 mb-2">
+        <div class="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+          <i data-lucide="calendar-check" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="font-display text-lg font-bold text-white">Request a Live Clinical Demo</h3>
+          <p class="text-xs text-slate-400">Deploy MediCore AI across your hospital network</p>
+        </div>
+      </div>
+
+      <form onsubmit="submitDemoRequest(event)" class="mt-5 space-y-3.5">
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Full Name</label>
+          <input required type="text" placeholder="Dr. Sarah Chen" class="w-full bg-[#060d0d] border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-400" />
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Work Email</label>
+          <input required type="email" placeholder="sarah.chen@citycare.org" class="w-full bg-[#060d0d] border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-400" />
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Hospital / Health System</label>
+          <input required type="text" placeholder="CityCare Medical Network" class="w-full bg-[#060d0d] border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-400" />
+        </div>
+        <button type="submit" class="w-full btn-emerald-glow py-3 rounded-xl font-semibold text-sm mt-2">
+          Schedule Personalized Walkthrough
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===================================================== -->
+  <!-- MODAL 2: CRITICAL ALERTS DRAWER / MODAL               -->
+  <!-- ===================================================== -->
+  <div id="alertsModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4">
+    <div class="glass-panel rounded-2xl max-w-lg w-full p-6 border border-amber-500/30 relative">
+      <button onclick="closeAlertsModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-2.5 mb-4">
+        <div class="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
+          <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="font-display text-lg font-bold text-white">Critical Patient Alerts (7)</h3>
+          <p class="text-xs text-slate-400">Click any patient to inspect live vitals & AI diagnostics</p>
+        </div>
+      </div>
+
+      <div id="alertsModalList" class="space-y-2.5 max-h-[340px] overflow-y-auto pr-1">
+        <!-- Populated via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================== -->
+  <!-- MODAL 3: PATIENT LOGIN & LIVE DATABASE PATIENT PORTAL -->
+  <!-- ===================================================== -->
+  <div id="patientLoginModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-md p-4">
+    <div class="glass-panel rounded-2xl max-w-lg w-full p-6 border border-emerald-500/30 relative max-h-[92vh] overflow-y-auto">
+      <button onclick="closePatientLoginModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors p-1">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <!-- Live SQLite Backend Connection Status Badge -->
+      <div id="dbConnectionBadge" class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-medium bg-slate-800/80 border border-slate-700 text-slate-300 mb-4">
+        <span class="w-2 h-2 rounded-full bg-slate-400 animate-pulse"></span>
+        <span>Checking /api/records connection...</span>
+      </div>
+
+      <!-- VIEW A: PATIENT LOGIN FORM -->
+      <div id="patientLoginFormView">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/35 flex items-center justify-center text-emerald-400 shadow-[0_0_18px_rgba(16,185,129,0.25)]">
+            <i data-lucide="user-check" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-display text-lg font-bold text-white">Patient Portal Login</h3>
+            <p class="text-xs text-slate-400">Sign in to fetch your live record from CityCare SQLite DB</p>
+          </div>
+        </div>
+
+        <!-- Inline Login Error Message -->
+        <div id="patientLoginError" class="hidden mb-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/35 text-xs text-rose-300 flex items-center gap-2">
+          <i data-lucide="alert-circle" class="w-4 h-4 text-rose-400 shrink-0"></i>
+          <span id="patientLoginErrorText"></span>
+        </div>
+
+        <form onsubmit="handlePatientLogin(event)" class="space-y-3.5">
+          <div>
+            <label for="patientIdInput" class="block text-xs font-medium text-slate-300 mb-1.5">Patient ID or Name</label>
+            <div class="relative">
+              <i data-lucide="search" class="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+              <input id="patientIdInput" required type="text" placeholder="e.g. 1, 42, or Patient #1" class="w-full bg-[#060d0d] border border-slate-700/90 rounded-xl pl-10 pr-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-400 transition-colors" />
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label for="patientPinInput" class="block text-xs font-medium text-slate-300">Access PIN / DOB Passcode</label>
+              <span class="text-[10px] text-emerald-400/90 font-mono">Demo PIN: 1234</span>
+            </div>
+            <div class="relative">
+              <i data-lucide="lock" class="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+              <input id="patientPinInput" required type="password" value="1234" placeholder="Enter any PIN (e.g. 1234)" class="w-full bg-[#060d0d] border border-slate-700/90 rounded-xl pl-10 pr-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-400 transition-colors" />
+            </div>
+          </div>
+
+          <button type="submit" class="w-full btn-emerald-glow py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 mt-2">
+            <i data-lucide="shield-check" class="w-4 h-4"></i>
+            <span>Sign In &amp; Fetch My Records</span>
+          </button>
+        </form>
+
+        <!-- Quick-Test Pills -->
+        <div class="mt-5 pt-4 border-t border-white/[0.06]">
+          <p class="text-[11px] text-slate-400 mb-2.5 flex items-center justify-between">
+            <span>Quick Demo Login (Instant Fetch):</span>
+            <button type="button" onclick="openDirectoryFromLogin()" class="text-cyan-400 hover:text-cyan-300 font-medium underline underline-offset-2">
+              Browse all records
+            </button>
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" onclick="quickLoginPatient(1)" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-white/[0.04] hover:bg-emerald-500/15 text-slate-200 hover:text-emerald-300 border border-white/10 hover:border-emerald-500/40 transition-all">
+              Try Patient #1
+            </button>
+            <button type="button" onclick="quickLoginPatient(25)" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-white/[0.04] hover:bg-emerald-500/15 text-slate-200 hover:text-emerald-300 border border-white/10 hover:border-emerald-500/40 transition-all">
+              Try Patient #25
+            </button>
+            <button type="button" onclick="quickLoginPatient(100)" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-white/[0.04] hover:bg-emerald-500/15 text-slate-200 hover:text-emerald-300 border border-white/10 hover:border-emerald-500/40 transition-all">
+              Try Patient #100
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW B: LOGGED-IN PATIENT PORTAL -->
+      <div id="patientPortalView" class="hidden">
+        <!-- Patient Header Card -->
+        <div class="flex items-start justify-between gap-3 pb-4 border-b border-white/[0.07]">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-400 to-cyan-500 text-[#031510] font-display font-extrabold text-lg flex items-center justify-center shadow-[0_0_24px_rgba(0,229,153,0.3)] shrink-0">
+              <span id="portalAvatarInitials">P1</span>
+            </div>
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <h3 id="portalPatientName" class="font-display text-lg font-bold text-white">Patient #1</h3>
+                <span id="portalPatientIdBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-md bg-white/[0.06] border border-white/10 text-emerald-300">#1</span>
+              </div>
+              <div class="text-xs text-slate-400 mt-0.5 flex items-center gap-1.5">
+                <i data-lucide="building-2" class="w-3.5 h-3.5 text-cyan-400"></i>
+                <span>Assigned Department:</span>
+                <span id="portalDepartment" class="text-white font-semibold">Cardiology</span>
+              </div>
+            </div>
+          </div>
+          <span id="portalRiskBadge" class="px-2.5 py-1 rounded-full text-[11px] font-semibold border shrink-0">
+            Optimal / Stable
+          </span>
+        </div>
+
+        <!-- Clinical Health / Priority Score Bar -->
+        <div class="mt-4 glass-card rounded-xl p-4">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <div class="text-xs font-medium text-slate-300">Clinical Health / Priority Score</div>
+              <div class="text-[11px] text-slate-500">Live record fetched from database.db</div>
+            </div>
+            <div class="font-display text-2xl font-extrabold text-white">
+              <span id="portalScoreVal">86</span><span class="text-xs font-normal text-slate-400"> / 100</span>
+            </div>
+          </div>
+          <div class="w-full h-2.5 rounded-full bg-slate-800/90 overflow-hidden">
+            <div id="portalScoreBar" class="h-full rounded-full transition-all duration-700 ease-out" style="width: 86%"></div>
+          </div>
+        </div>
+
+        <!-- Derived Live Vitals Grid -->
+        <div class="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          <div class="glass-card rounded-xl p-2.5 text-center">
+            <div class="text-[10px] text-slate-400">Heart Rate</div>
+            <div id="portalVitalHR" class="font-display text-base font-bold text-emerald-400 mt-0.5">74 bpm</div>
+          </div>
+          <div class="glass-card rounded-xl p-2.5 text-center">
+            <div class="text-[10px] text-slate-400">Blood Pressure</div>
+            <div id="portalVitalBP" class="font-display text-base font-bold text-cyan-400 mt-0.5">118/78</div>
+          </div>
+          <div class="glass-card rounded-xl p-2.5 text-center">
+            <div class="text-[10px] text-slate-400">SpO2 Level</div>
+            <div id="portalVitalSpO2" class="font-display text-base font-bold text-sky-400 mt-0.5">98%</div>
+          </div>
+          <div class="glass-card rounded-xl p-2.5 text-center">
+            <div class="text-[10px] text-slate-400">Resp. Rate</div>
+            <div id="portalVitalRR" class="font-display text-base font-bold text-amber-400 mt-0.5">17 br/m</div>
+          </div>
+        </div>
+
+        <!-- Care Plan & Upcoming Summary -->
+        <div class="mt-3 p-3.5 rounded-xl bg-emerald-500/[0.06] border border-emerald-500/20">
+          <div class="flex items-center gap-1.5 text-xs font-semibold text-emerald-300 mb-1">
+            <i data-lucide="clipboard-check" class="w-3.5 h-3.5"></i>
+            <span>AI Care Summary &amp; Next Steps</span>
+          </div>
+          <p id="portalCareSummary" class="text-xs text-slate-300 leading-relaxed"></p>
+        </div>
+
+        <!-- Portal Action Buttons -->
+        <div class="mt-5 flex flex-col sm:flex-row items-center gap-2.5">
+          <button onclick="loadPortalPatientIntoDashboard()" class="w-full sm:flex-1 btn-emerald-glow py-2.5 px-4 rounded-xl font-semibold text-xs sm:text-sm flex items-center justify-center gap-2">
+            <i data-lucide="activity" class="w-4 h-4"></i>
+            <span>Load into Main Dashboard</span>
+          </button>
+          <button onclick="logoutPatient()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs sm:text-sm font-medium text-slate-300 bg-white/[0.04] hover:bg-rose-500/15 hover:text-rose-300 border border-white/10 hover:border-rose-500/35 transition-all flex items-center justify-center gap-1.5">
+            <i data-lucide="log-out" class="w-4 h-4"></i>
+            <span>Switch Patient / Logout</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================== -->
+  <!-- MODAL 4: LIVE SQLITE PATIENT DIRECTORY                -->
+  <!-- ===================================================== -->
+  <div id="patientDirectoryModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-md p-4">
+    <div class="glass-panel rounded-2xl max-w-4xl w-full p-5 sm:p-6 border border-emerald-500/30 relative flex flex-col max-h-[88vh]">
+      <button onclick="closeDirectoryModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors p-1">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <!-- Header -->
+      <div class="flex flex-wrap items-center justify-between gap-3 pr-8 mb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-cyan-500/15 border border-cyan-500/35 flex items-center justify-center text-cyan-400">
+            <i data-lucide="database" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-display text-lg font-bold text-white">SQLite Patient Directory</h3>
+            <p class="text-xs text-slate-400">Live records pulled from <code class="text-emerald-300">/api/records</code> — click any row to log in</p>
+          </div>
+        </div>
+        <div id="directoryCountBadge" class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 border border-emerald-500/30 text-emerald-300">
+          Loading records...
+        </div>
+      </div>
+
+      <!-- Search & Department Filter Controls -->
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 mb-4">
+        <div class="relative flex-1">
+          <i data-lucide="search" class="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+          <input id="directorySearchInput" oninput="renderDirectoryTable()" type="text" placeholder="Search by Patient ID, Name, or Department..." class="w-full bg-[#060d0d] border border-slate-700/90 rounded-xl pl-10 pr-3.5 py-2 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-400 transition-colors" />
+        </div>
+        <select id="directoryDeptFilter" onchange="renderDirectoryTable()" class="bg-[#060d0d] border border-slate-700/90 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-emerald-400">
+          <option value="All">All Departments</option>
+          <option value="Cardiology">Cardiology</option>
+          <option value="Trauma">Trauma</option>
+          <option value="Neurology">Neurology</option>
+          <option value="General">General</option>
+        </select>
+        <button onclick="refreshDirectoryData()" class="px-3.5 py-2 rounded-xl text-xs font-medium bg-white/[0.04] hover:bg-emerald-500/15 text-slate-200 hover:text-emerald-300 border border-white/10 transition-all flex items-center justify-center gap-1.5">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+          <span>Refresh</span>
+        </button>
+      </div>
+
+      <!-- Scrollable Dark Table -->
+      <div class="flex-1 overflow-y-auto rounded-xl border border-white/[0.08] bg-[#060e0e]/85">
+        <table class="w-full text-left border-collapse">
+          <thead class="sticky top-0 bg-[#091616] border-b border-emerald-500/20 text-[11px] uppercase tracking-wider text-slate-400 z-10">
+            <tr>
+              <th class="py-3 px-4">ID</th>
+              <th class="py-3 px-4">Patient Name</th>
+              <th class="py-3 px-4">Department</th>
+              <th class="py-3 px-4">Score</th>
+              <th class="py-3 px-4 text-right">Action</th>
+            </tr>
+          </thead>
+          <tbody id="directoryTableBody" class="divide-y divide-white/[0.05] text-xs sm:text-sm">
+            <!-- Populated via JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Footer Row Info & Show All -->
+      <div class="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
+        <span id="directoryShowingText">Showing 0 records</span>
+        <button id="directoryShowAllBtn" onclick="showAllDirectoryRows()" class="hidden px-3 py-1 rounded-lg bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/25 font-medium transition-all">
+          Show All Matching Rows
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastNotification" class="fixed bottom-5 right-5 z-50 translate-y-20 opacity-0 pointer-events-none transition-all duration-300 glass-panel border-emerald-500/40 px-4 py-3 rounded-xl flex items-center gap-2.5 shadow-2xl">
+    <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400 shrink-0"></i>
+    <span id="toastMessage" class="text-xs sm:text-sm text-slate-100 font-medium"></span>
+  </div>
+
+  <!-- ===================================================== -->
+  <!-- APPLICATION LOGIC & INTERACTIVE CHARTS                -->
+  <!-- ===================================================== -->
+  <script>
+    // 1. Patient Dataset for Emergency Queue & Live Simulation
+    const PATIENTS = [
+      {
+        id: '774682',
+        code: 'Code Red',
+        waitTime: '3 min',
+        dotColor: 'bg-rose-500',
+        badgeClass: 'text-rose-400 bg-rose-500/15 border-rose-500/30',
+        hr: 112,
+        bpSys: 92,
+        bpDia: 58,
+        spo2: 93,
+        rr: 24,
+        rhythm: 'Tachycardia',
+        beatDuration: '0.68s',
+        confidence: 94,
+        prompt: 'Analyze recent labs for patient ID: 774682',
+        aiSummary: 'Analysis complete. The patient shows early signs of sepsis (elevated lactate 3.4 mmol/L, HR 112). Recommend immediate IV fluids, blood cultures, and Sepsis-3 protocol.',
+        trendHR: [88, 92, 95, 99, 104, 109, 112],
+        trendSpO2: [98, 97, 96, 95, 94, 93, 93]
+      },
+      {
+        id: '774685',
+        code: 'Code Orange',
+        waitTime: '8 min',
+        dotColor: 'bg-orange-400',
+        badgeClass: 'text-orange-400 bg-orange-500/15 border-orange-500/30',
+        hr: 96,
+        bpSys: 148,
+        bpDia: 94,
+        spo2: 96,
+        rr: 21,
+        rhythm: 'Elevated BP',
+        beatDuration: '0.85s',
+        confidence: 91,
+        prompt: 'Evaluate chest pain & troponin for patient ID: 774685',
+        aiSummary: 'Borderline ST-elevation detected with mild troponin rise. High probability of acute coronary syndrome. Recommend 12-lead ECG repeat and cardiology consult.',
+        trendHR: [82, 85, 88, 91, 94, 95, 96],
+        trendSpO2: [98, 98, 97, 97, 96, 96, 96]
+      },
+      {
+        id: '774691',
+        code: 'Code Yellow',
+        waitTime: '15 min',
+        dotColor: 'bg-amber-400',
+        badgeClass: 'text-amber-300 bg-amber-500/15 border-amber-500/30',
+        hr: 84,
+        bpSys: 128,
+        bpDia: 82,
+        spo2: 97,
+        rr: 19,
+        rhythm: 'Sinus Rhythm',
+        beatDuration: '1.05s',
+        confidence: 89,
+        prompt: 'Review respiratory panel for patient ID: 774691',
+        aiSummary: 'Mild bronchial inflammation noted. Oxygen saturation remains stable at 97%. Recommend nebulized bronchodilator and 2-hour observation.',
+        trendHR: [78, 80, 82, 85, 83, 84, 84],
+        trendSpO2: [96, 96, 97, 97, 97, 97, 97]
+      },
+      {
+        id: '774694',
+        code: 'Code Green',
+        waitTime: '28 min',
+        dotColor: 'bg-emerald-400',
+        badgeClass: 'text-emerald-400 bg-emerald-500/15 border-emerald-500/30',
+        hr: 72,
+        bpSys: 120,
+        bpDia: 80,
+        spo2: 98,
+        rr: 18,
+        rhythm: 'Normal Sinus',
+        beatDuration: '1.18s',
+        confidence: 97,
+        prompt: 'Summarize discharge readiness for patient ID: 774694',
+        aiSummary: 'All vitals within optimal baseline (HR 72 bpm, BP 120/80, SpO2 98%). Low readmission risk (4%). Cleared for standard outpatient follow-up.',
+        trendHR: [74, 73, 71, 72, 73, 72, 72],
+        trendSpO2: [99, 98, 98, 99, 98, 98, 98]
+      }
+    ];
+
+    let activePatientIndex = 0; // Start with #774682 (Code Red) but display crisp default baseline
+    let activeCustomPatient = null; // Holds synced SQLite patient when loaded into main dashboard
+    let currentViewMode = 'hero'; // 'hero' or 'full'
+    let vitalsChart = null;
+    let bedChart = null;
+
+    // SQLite Database & Patient Login State
+    let dbRecords = [];
+    let dbIsLive = false;
+    let loggedInPatient = null;
+    let directoryDisplayLimit = 60;
+
+    function getActiveTelemetryPatient() {
+      return activeCustomPatient || PATIENTS[activePatientIndex];
+    }
+
+    // 2. Render Emergency Queue & Alerts Modal
+    function renderEmergencyQueue() {
+      const container = document.getElementById('emergencyQueueList');
+      const modalList = document.getElementById('alertsModalList');
+      container.innerHTML = '';
+      modalList.innerHTML = '';
+
+      PATIENTS.forEach((p, idx) => {
+        const isActive = idx === activePatientIndex;
+        const item = document.createElement('button');
+        item.onclick = () => selectPatient(idx);
+        item.className = `queue-item w-full text-left px-2.5 py-2 rounded-xl border border-white/[0.06] bg-white/[0.02] hover:border-emerald-500/35 hover:bg-emerald-500/[0.06] transition-all flex items-center justify-between gap-2 ${isActive ? 'active-patient' : ''}`;
+        item.innerHTML = `
+          <div class="flex items-center gap-2.5 min-w-0">
+            <span class="w-2.5 h-2.5 rounded-full ${p.dotColor} shrink-0 shadow-[0_0_8px_currentColor]"></span>
+            <div class="truncate">
+              <div class="text-[11px] font-semibold text-white truncate">Patient ID: ${p.id}</div>
+              <div class="text-[10px] text-slate-400 flex items-center gap-1.5 mt-0.5">
+                <span class="px-1.5 py-0.2 rounded border ${p.badgeClass} font-medium">${p.code}</span>
+                <span>HR ${p.hr}</span>
+              </div>
+            </div>
+          </div>
+          <span class="text-[10px] font-mono text-slate-400 shrink-0">${p.waitTime}</span>
+        `;
+        container.appendChild(item);
+
+        // Also populate alerts modal
+        const modalItem = document.createElement('button');
+        modalItem.onclick = () => {
+          selectPatient(idx);
+          closeAlertsModal();
+        };
+        modalItem.className = 'w-full text-left p-3 rounded-xl bg-white/[0.03] hover:bg-emerald-500/10 border border-white/10 hover:border-emerald-500/40 transition-all flex items-center justify-between gap-3';
+        modalItem.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="w-3 h-3 rounded-full ${p.dotColor} shrink-0"></span>
+            <div>
+              <div class="text-xs font-bold text-white">Patient #${p.id} — <span class="text-slate-300 font-medium">${p.rhythm}</span></div>
+              <div class="text-[11px] text-slate-400 mt-0.5">HR: ${p.hr} bpm • BP: ${p.bpSys}/${p.bpDia} • SpO2: ${p.spo2}%</div>
+            </div>
+          </div>
+          <span class="text-xs font-semibold px-2 py-1 rounded-lg border ${p.badgeClass}">${p.code}</span>
+        `;
+        modalList.appendChild(modalItem);
+      });
+    }
+
+    // 3. Select Patient & Update Dashboard Live Context
+    function selectPatient(index) {
+      activeCustomPatient = null;
+      activePatientIndex = index;
+      const p = PATIENTS[index];
+
+      // Update Active Badge
+      document.getElementById('activePatientBadge').textContent = `#${p.id}`;
+      document.getElementById('holoStatusTag').textContent = p.rhythm;
+
+      // Update Vitals Cards
+      document.getElementById('vitalHR').textContent = p.hr;
+      document.getElementById('vitalBP').textContent = `${p.bpSys}/${p.bpDia}`;
+      document.getElementById('vitalSpO2').textContent = `${p.spo2}%`;
+      document.getElementById('vitalRR').textContent = p.rr;
+
+      // Update Heartbeat Animation Speed
+      document.getElementById('holoHeartSvg').style.setProperty('--beat-duration', p.beatDuration);
+
+      // Update AI Assistant Context
+      const chatBox = document.getElementById('aiChatBox');
+      chatBox.innerHTML = `
+        <div class="bg-white/[0.04] border border-white/[0.06] rounded-lg p-2 text-[11px] text-slate-300">
+          ${p.prompt}
+        </div>
+        <div class="bg-emerald-500/[0.08] border border-emerald-500/25 rounded-lg p-2 text-[11px] text-slate-200 leading-relaxed">
+          <span class="text-emerald-400 font-semibold">Analysis complete.</span> ${p.aiSummary}
+        </div>
+      `;
+      document.getElementById('aiConfidenceText').textContent = `${p.confidence}%`;
+      document.getElementById('aiConfidenceBar').style.width = `${p.confidence}%`;
+
+      // Update Vitals Chart
+      if (vitalsChart) {
+        vitalsChart.data.datasets[0].data = [...p.trendHR];
+        vitalsChart.data.datasets[1].data = [...p.trendSpO2];
+        vitalsChart.update();
+      }
+
+      renderEmergencyQueue();
+      showToast(`Loaded live telemetry for Patient #${p.id} (${p.code})`);
+    }
+
+    // 4. Interactive AI Clinical Assistant Chat
+    function sendQuickPrompt(text) {
+      document.getElementById('aiInput').value = text;
+      handleAiSubmit(new Event('submit'));
+    }
+
+    function handleAiSubmit(event) {
+      event.preventDefault();
+      const input = document.getElementById('aiInput');
+      const query = input.value.trim();
+      if (!query) return;
+
+      const p = getActiveTelemetryPatient();
+      const chatBox = document.getElementById('aiChatBox');
+
+      // Append user message
+      const userBubble = document.createElement('div');
+      userBubble.className = 'bg-white/[0.05] border border-white/[0.08] rounded-lg p-2 text-[11px] text-white';
+      userBubble.textContent = query;
+      chatBox.appendChild(userBubble);
+
+      input.value = '';
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      // Generate contextual clinical AI reply
+      const q = query.toLowerCase();
+      let reply = `For Patient #${p.id} (${p.code}), current vitals show HR ${p.hr} bpm and SpO2 ${p.spo2}%. Continuous ICU telemetry monitoring is active.`;
+      if (q.includes('sepsis') || q.includes('risk')) {
+        reply = p.id === '774682'
+          ? 'Sepsis risk is HIGH (88%). qSOFA score = 2. Recommend immediate broad-spectrum antibiotics and 30 mL/kg crystalloid bolus.'
+          : `Sepsis risk for Patient #${p.id} is currently LOW (${p.id === '774694' ? '4%' : '18%'}). No acute inflammatory markers detected.`;
+      } else if (q.includes('med') || q.includes('drug') || q.includes('treat')) {
+        reply = p.id === '774682'
+          ? 'Suggested Protocol: IV Piperacillin-Tazobactam + Lactated Ringer’s bolus. Verify renal clearance prior to dosing.'
+          : `Standard supportive protocol for ${p.rhythm}: maintain continuous ECG monitoring and review electrolyte panel.`;
+      } else if (q.includes('discharge') || q.includes('bed')) {
+        reply = p.id === '774694'
+          ? 'Patient #774694 meets all discharge criteria. Releasing bed will lower General Ward occupancy to 70%.'
+          : `Patient #${p.id} is NOT cleared for discharge. Recommend maintaining current monitored bed assignment.`;
+      }
+
+      setTimeout(() => {
+        const aiBubble = document.createElement('div');
+        aiBubble.className = 'bg-emerald-500/[0.09] border border-emerald-500/25 rounded-lg p-2 text-[11px] text-slate-200 leading-relaxed';
+        aiBubble.innerHTML = `<span class="text-emerald-400 font-semibold">MediCore AI:</span> ${reply}`;
+        chatBox.appendChild(aiBubble);
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }, 320);
+    }
+
+    // 5. Initialize Chart.js Graphs
+    function initCharts() {
+      // Multi-Line Live Vitals Trend Chart
+      const ctxVitals = document.getElementById('vitalsTrendChart').getContext('2d');
+      vitalsChart = new Chart(ctxVitals, {
+        type: 'line',
+        data: {
+          labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '24:00'],
+          datasets: [
+            {
+              label: 'Heart Rate',
+              data: [148, 152, 145, 160, 155, 149, 154],
+              borderColor: '#00e599',
+              backgroundColor: 'rgba(0, 229, 153, 0.08)',
+              borderWidth: 2,
+              tension: 0.42,
+              pointRadius: 0,
+              pointHoverRadius: 4,
+              fill: true,
+            },
+            {
+              label: 'SpO2',
+              data: [98, 97, 99, 98, 96, 98, 98],
+              borderColor: '#22d3ee',
+              borderWidth: 1.8,
+              tension: 0.42,
+              pointRadius: 0,
+              pointHoverRadius: 4,
+            },
+            {
+              label: 'BP Systolic',
+              data: [118, 124, 115, 128, 122, 119, 121],
+              borderColor: '#fbbf24',
+              borderWidth: 1.6,
+              tension: 0.42,
+              pointRadius: 0,
+              pointHoverRadius: 4,
+            },
+            {
+              label: 'Resp. Index',
+              data: [42, 48, 52, 46, 55, 49, 51],
+              borderColor: '#a78bfa',
+              borderWidth: 1.5,
+              tension: 0.42,
+              pointRadius: 0,
+              pointHoverRadius: 4,
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: 'rgba(6, 15, 15, 0.95)',
+              borderColor: 'rgba(16, 185, 129, 0.35)',
+              borderWidth: 1,
+              titleColor: '#94a3b8',
+              bodyColor: '#f8fafc',
+              padding: 8,
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(148, 163, 184, 0.06)' },
+              ticks: { color: '#64748b', font: { size: 9 } }
+            },
+            y: {
+              min: 0,
+              max: 200,
+              grid: { color: 'rgba(148, 163, 184, 0.06)' },
+              ticks: { color: '#64748b', font: { size: 9 }, stepSize: 50 }
+            }
+          }
+        }
+      });
+
+      // Bed Occupancy Doughnut Chart
+      const ctxBed = document.getElementById('bedOccupancyChart').getContext('2d');
+      bedChart = new Chart(ctxBed, {
+        type: 'doughnut',
+        data: {
+          labels: ['ICU', 'ER', 'General', 'Available'],
+          datasets: [{
+            data: [26, 22, 30, 22],
+            backgroundColor: ['#00e599', '#22d3ee', '#0d9488', '#1e293b'],
+            borderColor: '#0a1414',
+            borderWidth: 2,
+            hoverOffset: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '74%',
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: 'rgba(6, 15, 15, 0.95)',
+              borderColor: 'rgba(16, 185, 129, 0.35)',
+              borderWidth: 1,
+              padding: 8
+            }
+          }
+        }
+      });
+    }
+
+    function updateVitalsChartRange() {
+      const range = document.getElementById('trendTimeRange').value;
+      if (!vitalsChart) return;
+      if (range === '24h') {
+        vitalsChart.data.labels = ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '24:00'];
+      } else if (range === '6h') {
+        vitalsChart.data.labels = ['06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00'];
+      } else {
+        vitalsChart.data.labels = ['10m', '20m', '30m', '40m', '50m', '55m', 'Now'];
+      }
+      vitalsChart.data.datasets.forEach(ds => {
+        ds.data = ds.data.map(val => Math.max(20, Math.min(190, val + Math.floor(Math.random() * 11 - 5))));
+      });
+      vitalsChart.update();
+    }
+
+    // 6. Live Subtle Ticking Simulation for Vitals
+    function startLiveVitalsTick() {
+      setInterval(() => {
+        const p = getActiveTelemetryPatient();
+        const hrJitter = Math.floor(Math.random() * 3) - 1; // -1, 0, +1
+        const rrJitter = Math.random() > 0.7 ? (Math.random() > 0.5 ? 1 : -1) : 0;
+
+        document.getElementById('vitalHR').textContent = p.hr + hrJitter;
+        document.getElementById('vitalRR').textContent = Math.max(12, p.rr + rrJitter);
+      }, 2400);
+    }
+
+    // 7. Toggle Between Split Hero View & Full-Screen Interactive Dashboard
+    function toggleViewMode() {
+      setViewMode(currentViewMode === 'hero' ? 'full' : 'hero');
+    }
+
+    function setViewMode(mode) {
+      currentViewMode = mode;
+      const container = document.getElementById('mainContainer');
+      const heroLeft = document.getElementById('heroLeftPanel');
+      const dashSection = document.getElementById('dashboardSection');
+      const toggleText = document.getElementById('viewToggleText');
+      const toggleIcon = document.getElementById('viewToggleIcon');
+
+      if (mode === 'full') {
+        container.classList.remove('hero-mode');
+        container.classList.add('full-dashboard-mode');
+        heroLeft.classList.add('hidden');
+        dashSection.classList.remove('lg:w-[58%]');
+        dashSection.classList.add('w-full');
+        toggleText.textContent = 'Landing View';
+        toggleIcon.setAttribute('data-lucide', 'minimize-2');
+      } else {
+        container.classList.add('hero-mode');
+        container.classList.remove('full-dashboard-mode');
+        heroLeft.classList.remove('hidden');
+        dashSection.classList.add('lg:w-[58%]');
+        dashSection.classList.remove('w-full');
+        toggleText.textContent = 'Full Dashboard';
+        toggleIcon.setAttribute('data-lucide', 'maximize-2');
+      }
+
+      lucide.createIcons();
+      // Resize charts smoothly after transition
+      setTimeout(() => {
+        if (vitalsChart) vitalsChart.resize();
+        if (bedChart) bedChart.resize();
+      }, 350);
+    }
+
+    // 8. Sidebar Navigation Highlight
+    function selectSidebarTab(btn, label) {
+      document.querySelectorAll('.sidebar-btn').forEach(b => {
+        b.classList.remove('active', 'bg-emerald-500/15', 'text-emerald-400', 'border', 'border-emerald-500/30');
+        b.classList.add('text-slate-400');
+      });
+      btn.classList.add('active', 'bg-emerald-500/15', 'text-emerald-400', 'border', 'border-emerald-500/30');
+      btn.classList.remove('text-slate-400');
+      showToast(`Switched module: ${label}`);
+    }
+
+    // 9. Modals & Toast Helpers (No alert/confirm)
+    function openDemoModal() {
+      const m = document.getElementById('demoModal');
+      m.classList.remove('hidden');
+      m.classList.add('flex');
+    }
+
+    function closeDemoModal() {
+      const m = document.getElementById('demoModal');
+      m.classList.add('hidden');
+      m.classList.remove('flex');
+    }
+
+    function submitDemoRequest(e) {
+      e.preventDefault();
+      closeDemoModal();
+      e.target.reset();
+      showToast('Demo request confirmed! Our clinical AI team will reach out shortly.');
+    }
+
+    function openAlertsModal() {
+      const m = document.getElementById('alertsModal');
+      m.classList.remove('hidden');
+      m.classList.add('flex');
+    }
+
+    function closeAlertsModal() {
+      const m = document.getElementById('alertsModal');
+      m.classList.add('hidden');
+      m.classList.remove('flex');
+    }
+
+    let toastTimer;
+    function showToast(msg) {
+      const toast = document.getElementById('toastNotification');
+      document.getElementById('toastMessage').textContent = msg;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3200);
+    }
+
+    // Close modals on backdrop click
+    document.getElementById('demoModal').addEventListener('click', (e) => {
+      if (e.target.id === 'demoModal') closeDemoModal();
+    });
+    document.getElementById('alertsModal').addEventListener('click', (e) => {
+      if (e.target.id === 'alertsModal') closeAlertsModal();
+    });
+    document.getElementById('patientLoginModal').addEventListener('click', (e) => {
+      if (e.target.id === 'patientLoginModal') closePatientLoginModal();
+    });
+    document.getElementById('patientDirectoryModal').addEventListener('click', (e) => {
+      if (e.target.id === 'patientDirectoryModal') closeDirectoryModal();
+    });
+
+    // =====================================================
+    // 10. LIVE SQLITE BACKEND CONNECTION (/api/records)
+    // =====================================================
+    function generateFallbackRecords() {
+      const categories = ['Cardiology', 'Trauma', 'Neurology', 'General'];
+      const list = [];
+      for (let i = 1; i <= 500; i++) {
+        // Deterministic realistic score & department for preview mode
+        const cat = categories[(i * 7 + 3) % categories.length];
+        const score = 40 + ((i * 29 + 17) % 61);
+        list.push({ id: i, name: `Patient #${i}`, category: cat, score: score });
+      }
+      return list;
+    }
+
+    async function fetchDatabaseRecords() {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 2500);
+        const res = await fetch('/api/records', { signal: controller.signal });
+        clearTimeout(timeoutId);
+
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        if (!Array.isArray(data) || data.length === 0) throw new Error('Empty dataset');
+
+        dbRecords = data;
+        dbIsLive = true;
+      } catch (err) {
+        if (dbRecords.length === 0) {
+          dbRecords = generateFallbackRecords();
+        }
+        dbIsLive = false;
+      }
+
+      updateDbStatusUI();
+      return dbRecords;
+    }
+
+    function updateDbStatusUI() {
+      const badge = document.getElementById('dbConnectionBadge');
+      const dirBadge = document.getElementById('directoryCountBadge');
+
+      if (dbIsLive) {
+        badge.className = 'inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/15 border border-emerald-500/35 text-emerald-300 mb-4';
+        badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 live-dot"></span><span>SQLite Backend Connected (${dbRecords.length} records)</span>`;
+        if (dirBadge) {
+          dirBadge.className = 'px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 border border-emerald-500/35 text-emerald-300';
+          dirBadge.textContent = `${dbRecords.length} records from database.db`;
+        }
+      } else {
+        badge.className = 'inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-semibold bg-amber-500/15 border border-amber-500/35 text-amber-300 mb-4';
+        badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-400"></span><span>Preview Mode (Run python frontend.py for live SQLite)</span>`;
+        if (dirBadge) {
+          dirBadge.className = 'px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/15 border border-amber-500/35 text-amber-300';
+          dirBadge.textContent = `${dbRecords.length} Preview Records (Offline Mode)`;
+        }
+      }
+    }
+
+    // Derive consistent clinical vitals, risk status, and care plan from a database row
+    function derivePatientProfile(record) {
+      const score = Number(record.score) || 70;
+      const idNum = Number(record.id) || 1;
+      const dept = record.category || 'General';
+
+      let riskLabel, riskBadgeClass, barClass, rhythm, beatDuration, codeLabel;
+      if (score >= 80) {
+        riskLabel = 'Optimal / Stable';
+        riskBadgeClass = 'text-emerald-300 bg-emerald-500/15 border-emerald-500/35';
+        barClass = 'bg-gradient-to-r from-emerald-500 to-[#00e599] shadow-[0_0_16px_rgba(0,229,153,0.45)]';
+        rhythm = 'Normal Sinus';
+        beatDuration = '1.16s';
+        codeLabel = 'Code Green';
+      } else if (score >= 60) {
+        riskLabel = 'Observation';
+        riskBadgeClass = 'text-amber-300 bg-amber-500/15 border-amber-500/35';
+        barClass = 'bg-gradient-to-r from-amber-500 to-yellow-400 shadow-[0_0_16px_rgba(251,191,36,0.4)]';
+        rhythm = 'Mild Arrhythmia';
+        beatDuration = '0.92s';
+        codeLabel = 'Code Yellow';
+      } else {
+        riskLabel = 'Priority Follow-up';
+        riskBadgeClass = 'text-rose-300 bg-rose-500/15 border-rose-500/35';
+        barClass = 'bg-gradient-to-r from-rose-500 to-orange-400 shadow-[0_0_16px_rgba(244,63,94,0.45)]';
+        rhythm = 'Elevated Load';
+        beatDuration = '0.72s';
+        codeLabel = 'Code Red';
+      }
+
+      const hr = score >= 80 ? 68 + (idNum % 12) : (score >= 60 ? 84 + (idNum % 14) : 102 + (idNum % 16));
+      const bpSys = score >= 80 ? 114 + (idNum % 10) : (score >= 60 ? 132 + (idNum % 14) : 146 + (idNum % 18));
+      const bpDia = score >= 80 ? 74 + (idNum % 8) : (score >= 60 ? 84 + (idNum % 10) : 92 + (idNum % 10));
+      const spo2 = score >= 80 ? 98 + (idNum % 2) : (score >= 60 ? 95 + (idNum % 3) : 92 + (idNum % 3));
+      const rr = score >= 80 ? 15 + (idNum % 4) : (score >= 60 ? 19 + (idNum % 3) : 22 + (idNum % 4));
+
+      const careMap = {
+        Cardiology: score >= 80
+          ? 'Cardiac telemetry shows steady sinus rhythm. Continue prescribed statin therapy and schedule routine echocardiogram in 30 days.'
+          : 'Elevated cardiac workload detected. Recommend 12-lead ECG review, troponin panel check, and continuous Holter telemetry.',
+        Trauma: score >= 80
+          ? 'Post-acute recovery trending positively with stable hemodynamics. Cleared for guided physiotherapy progression.'
+          : 'Requires active trauma ward observation. Maintain analgesic protocol, repeat imaging scan, and monitor BP stability.',
+        Neurology: score >= 80
+          ? 'Neurological baseline intact with stable vitals. Continue current medication schedule and outpatient check-in next month.'
+          : 'Flagged for priority neuro-assessment. Recommend MRI review with attending neurologist and 4-hour vitals cadence.',
+        General: score >= 80
+          ? 'All metabolic and vital indicators are within healthy baseline ranges. Eligible for standard digital follow-up.'
+          : 'Clinical score indicates need for closer inpatient review. Repeat complete blood count and review care plan with physician.'
+      };
+
+      const careSummary = careMap[dept] || careMap.General;
+      const trendHR = [hr - 6, hr - 4, hr - 2, hr + 1, hr - 1, hr + 2, hr];
+      const trendSpO2 = [Math.min(100, spo2 + 1), spo2, spo2, Math.max(90, spo2 - 1), spo2, spo2, spo2];
+
+      return {
+        id: String(record.id),
+        name: record.name,
+        category: dept,
+        score,
+        code: codeLabel,
+        riskLabel,
+        riskBadgeClass,
+        barClass,
+        hr,
+        bpSys,
+        bpDia,
+        spo2,
+        rr,
+        rhythm,
+        beatDuration,
+        confidence: Math.min(99, Math.max(85, Math.round(82 + score * 0.16))),
+        careSummary,
+        trendHR,
+        trendSpO2
+      };
+    }
+
+    // =====================================================
+    // 11. PATIENT LOGIN MODAL & PORTAL HANDLERS
+    // =====================================================
+    async function openPatientLoginModal(sidebarBtn) {
+      if (sidebarBtn) {
+        selectSidebarTab(sidebarBtn, 'Patient Login Portal');
+      }
+      const m = document.getElementById('patientLoginModal');
+      m.classList.remove('hidden');
+      m.classList.add('flex');
+      hidePatientLoginError();
+
+      await fetchDatabaseRecords();
+
+      if (loggedInPatient) {
+        renderLoggedInPortal(loggedInPatient);
+      } else {
+        document.getElementById('patientLoginFormView').classList.remove('hidden');
+        document.getElementById('patientPortalView').classList.add('hidden');
+        setTimeout(() => document.getElementById('patientIdInput').focus(), 80);
+      }
+      lucide.createIcons();
+    }
+
+    function closePatientLoginModal() {
+      const m = document.getElementById('patientLoginModal');
+      m.classList.add('hidden');
+      m.classList.remove('flex');
+    }
+
+    function showPatientLoginError(msg) {
+      const errBox = document.getElementById('patientLoginError');
+      document.getElementById('patientLoginErrorText').textContent = msg;
+      errBox.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function hidePatientLoginError() {
+      document.getElementById('patientLoginError').classList.add('hidden');
+    }
+
+    function findPatientRecord(queryRaw) {
+      const q = String(queryRaw).trim().toLowerCase();
+      if (!q) return null;
+
+      // Strip leading '#' or 'patient #' for numeric ID lookup
+      const numericMatch = q.replace(/^patient\s*#?/, '').replace(/^#/, '').trim();
+      if (/^\d+$/.test(numericMatch)) {
+        const targetId = parseInt(numericMatch, 10);
+        const byId = dbRecords.find(r => Number(r.id) === targetId);
+        if (byId) return byId;
+      }
+
+      // Exact name match first, then partial name match
+      const exactName = dbRecords.find(r => String(r.name).toLowerCase() === q);
+      if (exactName) return exactName;
+
+      return dbRecords.find(r => String(r.name).toLowerCase().includes(q)) || null;
+    }
+
+    async function handlePatientLogin(event) {
+      event.preventDefault();
+      hidePatientLoginError();
+
+      const idInput = document.getElementById('patientIdInput').value.trim();
+      const pinInput = document.getElementById('patientPinInput').value.trim();
+
+      if (!idInput || !pinInput) {
+        showPatientLoginError('Please enter both your Patient ID/Name and Access PIN.');
+        return;
+      }
+
+      if (dbRecords.length === 0) {
+        await fetchDatabaseRecords();
+      }
+
+      const matched = findPatientRecord(idInput);
+      if (!matched) {
+        showPatientLoginError(`No patient found matching "${idInput}". Try an ID between 1 and ${dbRecords.length}.`);
+        return;
+      }
+
+      loggedInPatient = matched;
+      renderLoggedInPortal(matched);
+      updateNavbarPatientPill();
+      showToast(`Signed in as ${matched.name} (${matched.category})`);
+    }
+
+    async function quickLoginPatient(idNum) {
+      document.getElementById('patientIdInput').value = `Patient #${idNum}`;
+      document.getElementById('patientPinInput').value = '1234';
+      await handlePatientLogin(new Event('submit'));
+    }
+
+    function renderLoggedInPortal(record) {
+      const profile = derivePatientProfile(record);
+
+      document.getElementById('patientLoginFormView').classList.add('hidden');
+      document.getElementById('patientPortalView').classList.remove('hidden');
+
+      document.getElementById('portalAvatarInitials').textContent = `P${profile.id}`.slice(0, 4);
+      document.getElementById('portalPatientName').textContent = profile.name;
+      document.getElementById('portalPatientIdBadge').textContent = `#${profile.id}`;
+      document.getElementById('portalDepartment').textContent = profile.category;
+
+      const riskBadge = document.getElementById('portalRiskBadge');
+      riskBadge.textContent = profile.riskLabel;
+      riskBadge.className = `px-2.5 py-1 rounded-full text-[11px] font-semibold border shrink-0 ${profile.riskBadgeClass}`;
+
+      document.getElementById('portalScoreVal').textContent = profile.score;
+      const scoreBar = document.getElementById('portalScoreBar');
+      scoreBar.className = `h-full rounded-full transition-all duration-700 ease-out ${profile.barClass}`;
+      scoreBar.style.width = '0%';
+      setTimeout(() => {
+        scoreBar.style.width = `${Math.min(100, Math.max(5, profile.score))}%`;
+      }, 40);
+
+      document.getElementById('portalVitalHR').textContent = `${profile.hr} bpm`;
+      document.getElementById('portalVitalBP').textContent = `${profile.bpSys}/${profile.bpDia}`;
+      document.getElementById('portalVitalSpO2').textContent = `${profile.spo2}%`;
+      document.getElementById('portalVitalRR').textContent = `${profile.rr} br/m`;
+      document.getElementById('portalCareSummary').textContent = profile.careSummary;
+
+      lucide.createIcons();
+    }
+
+    function updateNavbarPatientPill() {
+      const btn = document.getElementById('patientLoginNavBtn');
+      const txt = document.getElementById('patientLoginNavText');
+      if (loggedInPatient) {
+        btn.className = 'px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-emerald-500/20 text-emerald-200 border border-emerald-400/50 hover:bg-emerald-500/30 transition-all flex items-center gap-2 shadow-[0_0_16px_rgba(0,229,153,0.2)]';
+        txt.textContent = `${loggedInPatient.name}`;
+      } else {
+        btn.className = 'px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-500/20 hover:border-cyan-400/50 transition-all flex items-center gap-2';
+        txt.textContent = 'Patient Login';
+      }
+      lucide.createIcons();
+    }
+
+    function loadPortalPatientIntoDashboard() {
+      if (!loggedInPatient) return;
+      const p = derivePatientProfile(loggedInPatient);
+      activeCustomPatient = p;
+
+      // Sync Active Patient badge & 3D Cardiac Twin
+      document.getElementById('activePatientBadge').textContent = `${p.name} (${p.category})`;
+      document.getElementById('holoStatusTag').textContent = p.rhythm;
+      document.getElementById('holoHeartSvg').style.setProperty('--beat-duration', p.beatDuration);
+
+      // Sync 4 Live Vitals Cards
+      document.getElementById('vitalHR').textContent = p.hr;
+      document.getElementById('vitalBP').textContent = `${p.bpSys}/${p.bpDia}`;
+      document.getElementById('vitalSpO2').textContent = `${p.spo2}%`;
+      document.getElementById('vitalRR').textContent = p.rr;
+
+      // Sync AI Diagnosis Assistant Context
+      const chatBox = document.getElementById('aiChatBox');
+      chatBox.innerHTML = `
+        <div class="bg-white/[0.04] border border-white/[0.06] rounded-lg p-2 text-[11px] text-slate-300">
+          Loaded SQLite record for <span class="text-white font-semibold">${p.name}</span> — ${p.category} (Score: ${p.score}/100)
+        </div>
+        <div class="bg-emerald-500/[0.08] border border-emerald-500/25 rounded-lg p-2 text-[11px] text-slate-200 leading-relaxed">
+          <span class="text-emerald-400 font-semibold">${p.riskLabel}.</span> ${p.careSummary}
+        </div>
+      `;
+      document.getElementById('aiConfidenceText').textContent = `${p.confidence}%`;
+      document.getElementById('aiConfidenceBar').style.width = `${p.confidence}%`;
+
+      // Sync Live Vitals Trend Chart
+      if (vitalsChart) {
+        vitalsChart.data.datasets[0].data = [...p.trendHR];
+        vitalsChart.data.datasets[1].data = [...p.trendSpO2];
+        vitalsChart.update();
+      }
+
+      // Clear active highlight on default emergency queue items
+      document.querySelectorAll('.queue-item').forEach(el => el.classList.remove('active-patient'));
+
+      closePatientLoginModal();
+      setViewMode('full');
+      showToast(`Synced ${p.name} (Score ${p.score}/100) to Main Dashboard`);
+    }
+
+    function logoutPatient() {
+      loggedInPatient = null;
+      updateNavbarPatientPill();
+      document.getElementById('patientPortalView').classList.add('hidden');
+      document.getElementById('patientLoginFormView').classList.remove('hidden');
+      document.getElementById('patientIdInput').value = '';
+      hidePatientLoginError();
+      showToast('Logged out of Patient Portal');
+      lucide.createIcons();
+    }
+
+    function openDirectoryFromLogin() {
+      closePatientLoginModal();
+      openDirectoryModal();
+    }
+
+    // =====================================================
+    // 12. LIVE SQLITE PATIENT DIRECTORY MODAL
+    // =====================================================
+    async function openDirectoryModal(sidebarBtn) {
+      if (sidebarBtn) {
+        selectSidebarTab(sidebarBtn, 'SQLite Patient Directory');
+      }
+      directoryDisplayLimit = 60;
+      const m = document.getElementById('patientDirectoryModal');
+      m.classList.remove('hidden');
+      m.classList.add('flex');
+
+      await fetchDatabaseRecords();
+      renderDirectoryTable();
+      lucide.createIcons();
+    }
+
+    function closeDirectoryModal() {
+      const m = document.getElementById('patientDirectoryModal');
+      m.classList.add('hidden');
+      m.classList.remove('flex');
+    }
+
+    async function refreshDirectoryData() {
+      await fetchDatabaseRecords();
+      renderDirectoryTable();
+      showToast(dbIsLive ? `Refreshed ${dbRecords.length} live SQLite records` : 'Refreshed preview dataset (start python frontend.py for SQLite)');
+    }
+
+    function showAllDirectoryRows() {
+      directoryDisplayLimit = dbRecords.length;
+      renderDirectoryTable();
+    }
+
+    function renderDirectoryTable() {
+      const query = (document.getElementById('directorySearchInput').value || '').trim().toLowerCase();
+      const dept = document.getElementById('directoryDeptFilter').value;
+      const tbody = document.getElementById('directoryTableBody');
+      const showingText = document.getElementById('directoryShowingText');
+      const showAllBtn = document.getElementById('directoryShowAllBtn');
+
+      const filtered = dbRecords.filter(r => {
+        const matchesDept = dept === 'All' || String(r.category).toLowerCase() === dept.toLowerCase();
+        if (!matchesDept) return false;
+        if (!query) return true;
+        return (
+          String(r.id).includes(query) ||
+          String(r.name).toLowerCase().includes(query) ||
+          String(r.category).toLowerCase().includes(query)
+        );
+      });
+
+      const visible = filtered.slice(0, directoryDisplayLimit);
+
+      if (visible.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="py-10 text-center text-slate-400 text-xs">
+              No patients match your search criteria.
+            </td>
+          </tr>
+        `;
+      } else {
+        tbody.innerHTML = visible.map(r => {
+          const score = Number(r.score) || 0;
+          const scoreColor = score >= 80
+            ? 'text-emerald-300 bg-emerald-500/15 border-emerald-500/30'
+            : (score >= 60
+              ? 'text-amber-300 bg-amber-500/15 border-amber-500/30'
+              : 'text-rose-300 bg-rose-500/15 border-rose-500/30');
+
+          return `
+            <tr class="hover:bg-emerald-500/[0.05] transition-colors">
+              <td class="py-2.5 px-4 font-mono text-slate-400">#${r.id}</td>
+              <td class="py-2.5 px-4 font-semibold text-white">${r.name}</td>
+              <td class="py-2.5 px-4">
+                <span class="px-2 py-0.5 rounded-md text-[11px] bg-white/[0.04] border border-white/10 text-slate-300">${r.category}</span>
+              </td>
+              <td class="py-2.5 px-4">
+                <span class="px-2 py-0.5 rounded-md text-[11px] font-bold border ${scoreColor}">${score}/100</span>
+              </td>
+              <td class="py-2.5 px-4 text-right">
+                <button onclick="loginFromDirectory(${r.id})" class="px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-emerald-500/15 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/35 transition-all">
+                  Login as Patient
+                </button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      showingText.textContent = `Showing ${visible.length} of ${filtered.length} matching records`;
+      if (filtered.length > visible.length) {
+        showAllBtn.classList.remove('hidden');
+        showAllBtn.textContent = `Show All ${filtered.length} Rows`;
+      } else {
+        showAllBtn.classList.add('hidden');
+      }
+    }
+
+    function loginFromDirectory(id) {
+      const matched = dbRecords.find(r => Number(r.id) === Number(id));
+      if (!matched) return;
+      loggedInPatient = matched;
+      updateNavbarPatientPill();
+      closeDirectoryModal();
+      openPatientLoginModal();
+      showToast(`Signed in as ${matched.name} (#${matched.id})`);
+    }
+
+    // Boot Application
+    window.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      renderEmergencyQueue();
+      initCharts();
+      startLiveVitalsTick();
+      fetchDatabaseRecords();
+    });
+  </script>
+</body>
+</html>
